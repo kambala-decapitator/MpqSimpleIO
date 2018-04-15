@@ -7,9 +7,14 @@ Project {
         consoleApplication: true
         files: "main.cpp"
 
-        Group {     // Properties for the produced executable
+        Properties {
+            condition: qbs.targetOS.contains("macos")
+            cpp.frameworks: "StormLib"
+            cpp.frameworkPaths: "."
+        }
+
+        Group { // Properties for the produced executable
             fileTagsFilter: "application"
-            qbs.install: true
         }
     }
 }
