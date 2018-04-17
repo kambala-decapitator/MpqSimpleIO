@@ -9,8 +9,10 @@ Project {
 
         Properties {
             condition: qbs.targetOS.contains("macos")
-            cpp.frameworks: "StormLib"
-            cpp.frameworkPaths: "."
+            cpp.dynamicLibraries: ["bz2", "z"]
+            cpp.includePaths: "."
+            cpp.libraryPaths: "StormLib"
+            cpp.staticLibraries: "StormLib"
         }
 
         Group { // Properties for the produced executable
