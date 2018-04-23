@@ -7,6 +7,7 @@ Project {
         consoleApplication: true
         files: "main.cpp"
 
+        cpp.cxxLanguageVersion: "c++11"
         cpp.includePaths: "."
         cpp.libraryPaths: "StormLib"
         cpp.staticLibraries: "StormLib"
