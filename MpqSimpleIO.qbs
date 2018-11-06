@@ -14,7 +14,9 @@ Project {
 
         Properties {
             condition: qbs.targetOS.contains("macos")
+            cpp.cxxStandardLibrary: "libc++"
             cpp.dynamicLibraries: ["bz2", "z"]
+            cpp.minimumMacosVersion: "10.9"
         }
         Properties {
             condition: qbs.targetOS.contains("windows")
