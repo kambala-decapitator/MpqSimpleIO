@@ -5,6 +5,7 @@
 
 using std::cerr;
 using std::endl;
+using std::string;
 
 int main(int argc, const char *argv[])
 {
@@ -39,6 +40,7 @@ int main(int argc, const char *argv[])
         cerr << "failed to open MPQ, error: " << GetLastError() << endl;
         return 4;
     }
+    auto closeMpq = [&mpqHandle]{ SFileCloseArchive(mpqHandle); };
 
     if (mpqFlag == STREAM_FLAG_READ_ONLY)
     {
@@ -46,10 +48,10 @@ int main(int argc, const char *argv[])
         SFILE_FIND_DATA findData;
         if (auto findHandle = SFileFindFirstFile(mpqHandle, mpqInternalPathMask, &findData, nullptr))
         {
-            std::string extractPath;
+            string extractPath;
             if (!isListMode)
             {
-                extractPath = std::string{argv[4]};
+                extractPath = string{argv[4]};
                 if (extractPath.back() != '/')
 #ifdef PLATFORM_WINDOWS
                     if (extractPath.back() != '\\')
@@ -82,7 +84,58 @@ int main(int argc, const char *argv[])
             cerr << endl;
         }
     }
+    else
+    {
+        string thirdParam{argv[3]}, prefixParam{"--prefix="}, internalPathPrefix;
+        int filesStartIndex;
+        bool isSinglePrefix;
+        if ((isSinglePrefix = thirdParam.find(prefixParam) == 0))
+        {
+            internalPathPrefix = thirdParam.substr(prefixParam.length());
+            filesStartIndex = 4;
+        }
+        else
+        {
+            filesStartIndex = 3;
+            if ((argc - filesStartIndex) % 2)
+            {
+                cerr << "each input file must be balanced with an output one" << endl;
+                closeMpq();
+                return 5;
+            }
+        }
 
-    SFileCloseArchive(mpqHandle);
+        for (int i = filesStartIndex; i < argc; ++i)
+        {
+            string filePath{argv[i]}, internalPath;
+            if (isSinglePrefix)
+            {
+                string fileName;
+                auto lastSlashIndex = filePath.rfind('/');
+#ifdef PLATFORM_WINDOWS
+                if (lastSlashIndex == string::npos)
+                    lastSlashIndex = filePath.rfind('\\');
+#endif
+                if (lastSlashIndex == string::npos)
+                {
+                    cerr << "failed to determine filename of '" << filePath << "', skipping" << endl;
+                    continue;
+                }
+                internalPath = internalPathPrefix + filePath.substr(lastSlashIndex + 1);
+            }
+            else
+                internalPath = argv[++i];
+
+            auto s = "'" + filePath + "' => '" + internalPath + "'";
+            if (SFileAddFileEx(mpqHandle, filePath.c_str(), internalPath.c_str(), MPQ_FILE_COMPRESS | MPQ_FILE_REPLACEEXISTING, MPQ_COMPRESSION_PKWARE, MPQ_COMPRESSION_NEXT_SAME))
+                std::cout << s << endl;
+            else
+                cerr << s << " error: " << GetLastError() << endl;
+        }
+
+        SFileCompactArchive(mpqHandle, nullptr, false);
+    }
+
+    closeMpq();
     return 0;
 }
