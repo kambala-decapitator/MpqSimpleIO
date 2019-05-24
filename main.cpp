@@ -116,12 +116,7 @@ int main(int argc, const char *argv[])
                 if (lastSlashIndex == string::npos)
                     lastSlashIndex = filePath.rfind('\\');
 #endif
-                if (lastSlashIndex == string::npos)
-                {
-                    cerr << "failed to determine filename of '" << filePath << "', skipping" << endl;
-                    continue;
-                }
-                internalPath = internalPathPrefix + filePath.substr(lastSlashIndex + 1);
+                internalPath = internalPathPrefix + filePath.substr(lastSlashIndex != string::npos ? lastSlashIndex + 1 : 0);
             }
             else
                 internalPath = argv[++i];
