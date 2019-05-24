@@ -16,11 +16,11 @@ int main(int argc, const char *argv[])
     }
 
     auto mode = argv[1];
-    auto isListMode = !strcmp(mode, "-l");
+    auto isListMode = !strcmp(mode, "-l") || !strcmp(mode, "--list");
     DWORD mpqFlag;
-    if (isListMode || !strcmp(mode, "-r"))
+    if (isListMode || !strcmp(mode, "-r") || !strcmp(mode, "--read"))
         mpqFlag = STREAM_FLAG_READ_ONLY;
-    else if (!strcmp(mode, "-w"))
+    else if (!strcmp(mode, "-w") || !strcmp(mode, "--write"))
         mpqFlag = STREAM_FLAG_WRITE_SHARE;
     else
     {
