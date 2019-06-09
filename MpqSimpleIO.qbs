@@ -9,14 +9,15 @@ Project {
 
         cpp.cxxLanguageVersion: "c++11"
         cpp.includePaths: "."
-        cpp.libraryPaths: "StormLib"
-        cpp.staticLibraries: "StormLib"
 
         Properties {
             condition: qbs.targetOS.contains("macos")
             cpp.cxxStandardLibrary: "libc++"
             cpp.dynamicLibraries: ["bz2", "z"]
             cpp.minimumMacosVersion: "10.9"
+
+            cpp.libraryPaths: "StormLib/macos"
+            cpp.staticLibraries: "StormLib"
         }
         Properties {
             condition: qbs.targetOS.contains("windows")
@@ -26,6 +27,8 @@ Project {
                 return flags
             }
             cpp.defines: "STORMLIB_NO_AUTO_LINK"
+
+            cpp.libraryPaths: "StormLib/windows"
             cpp.staticLibraries: qbs.buildVariant == "debug" ? "StormLibDAS" : "StormLibRAS"
         }
 
