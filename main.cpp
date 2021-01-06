@@ -64,7 +64,7 @@ int main(int argc, const char *argv[])
             {
                 auto fileInternalPath = findData.cFileName;
                 if (isListMode)
-                    std::cout << fileInternalPath << endl;
+                    std::cout << findData.dwFileSize << " " << fileInternalPath << endl;
                 else
                 {
                     auto fileExtractPath = extractPath + findData.szPlainName;
