@@ -1,5 +1,9 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.12)
+
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum macOS version" FORCE)
+if(WIN32)
+  set(CMAKE_GENERATOR_PLATFORM "Win32" CACHE STRING "" FORCE) # force 32-bit build
+endif()
 
 project(MpqSimpleIO
   VERSION 1.0
@@ -21,8 +25,9 @@ if(APPLE)
   set_target_properties(${STORMLIB} PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/StormLib/macos/libStormLib.a)
   target_link_libraries(${PROJECT_NAME} bz2 z)
 elseif(WIN32)
-  set(STORMLIB_NAME $<IF:$<CONFIG:Debug>,StormLibDAS,StormLibRAS>)
-  set_target_properties(${STORMLIB} PROPERTIES IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/StormLib/windows/${STORMLIB_NAME}.lib")
+  set(STORMLIB_DIR "${CMAKE_SOURCE_DIR}/StormLib/windows")
+  set_target_properties(${STORMLIB} PROPERTIES IMPORTED_LOCATION "${STORMLIB_DIR}/StormLibRAS.lib")
+  set_target_properties(${STORMLIB} PROPERTIES IMPORTED_LOCATION_DEBUG "${STORMLIB_DIR}/StormLibDAS.lib")
 
   target_compile_definitions(${PROJECT_NAME} PRIVATE STORMLIB_NO_AUTO_LINK)
   target_compile_options(${PROJECT_NAME} PRIVATE /UUNICODE /U_UNICODE) # ANSI build
