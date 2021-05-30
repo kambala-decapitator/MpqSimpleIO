@@ -44,6 +44,11 @@ int main(int argc, const char *argv[])
 
     if (mpqFlag == STREAM_FLAG_READ_ONLY)
     {
+        // for list mode path mask is required
+        const auto extraListFileArgIndex = isListMode ? 4 : 5;
+        if (extraListFileArgIndex < argc)
+            SFileAddListFile(mpqHandle, argv[extraListFileArgIndex]);
+
         auto mpqInternalPathMask = (!isListMode || argc > 3) ? argv[3] : "*";
         SFILE_FIND_DATA findData;
         if (auto findHandle = SFileFindFirstFile(mpqHandle, mpqInternalPathMask, &findData, nullptr))
