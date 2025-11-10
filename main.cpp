@@ -1,7 +1,11 @@
 #include <iostream>
 #include <string>
 #include <cstring>
-#include <StormLib/StormLib.h>
+#include <StormLib.h>
+
+#ifdef STORMLIB_LINUX
+#define GetLastError SErrGetLastError
+#endif
 
 using std::cerr;
 using std::endl;
